@@ -1,0 +1,34 @@
+
+# Data 
+data/
+~$*.xlsx
+~$*.xls
+*.xlk
+
+# Python environment
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+.virtual_documents/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
+
+# Outputs
+
+outputs/figures/_*.png
+.env
