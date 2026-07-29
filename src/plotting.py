@@ -22,7 +22,7 @@ tpl.width = 1400
 tpl.height = 600
 tpl.plot_bgcolor = "white"
 tpl.paper_bgcolor = "white"
-tpl.margin = dict(t=90, b=70, l=70, r=40)
+tpl.margin = dict(t=100, b=80, l=90, r=90)
 
 # Type
 tpl.font.family = "Helvetica, Arial, sans-serif"
@@ -30,8 +30,9 @@ tpl.font.color = "#2B2B2B"
 tpl.font.size = 13
 tpl.title.font.size = 20
 
-# Editorial title placement (left-aligned, Economist-style)
-tpl.title.x = 0
+# Title placement (left-aligned)
+tpl.title.xref = "container"
+tpl.title.x = 0.02
 tpl.title.xanchor = "left"
 tpl.title.y = 0.95
 
@@ -39,6 +40,7 @@ tpl.title.y = 0.95
 tpl.yaxis.gridcolor = GRID
 tpl.yaxis.zeroline = False
 tpl.yaxis.showline = False
+tpl.yaxis.ticklabelstandoff = 5
 tpl.xaxis.showgrid = False
 tpl.xaxis.showline = True
 tpl.xaxis.linecolor = GRID
@@ -58,8 +60,6 @@ pflag_colors = {
     "Did not Activate": "#5A6B6D",
 }
 
-pio.templates.default = "custom_theme"
-
 def plot_rc_over_time(rc_table, root_cause, quarter_order, color=NEUTRAL):
     subset = rc_table[rc_table["Root Cause"] == root_cause]
     fig = px.bar(
@@ -76,28 +76,14 @@ def export_charts(charts_dict, folder="../outputs/figures", scale=2):
     for name, figure in charts_dict.items():
         figure.write_image(f"{folder}/{name}.png", scale=scale)
 
-def add_source(fig, text, y=-0.12):
-    """Add a small grey source note bottom-left, Economist-style."""
+def add_source(fig, text, y=-0.10):
+    """Add a small grey source note bottom-left"""
     fig.add_annotation(
         text=text, xref="paper", yref="paper", x=0, y=y,
         showarrow=False, xanchor="left",
         font=dict(size=11, color=MUTED),
     )
     return fig
-
-def emphasis_colors(categories, emphasis, accent=ACCENT, ramp=GREY_RAMP):
-    """
-    Colour list aligned to `categories`: `emphasis` gets `accent`,
-    everything else steps through `ramp` in order.
-    """
-    colors, i = [], 0
-    for cat in categories:
-        if cat == emphasis:
-            colors.append(accent)
-        else:
-            colors.append(ramp[i % len(ramp)])
-            i += 1
-    return colors
 
 def build_emphasis_map(categories, emphasis, accent=ACCENT, ramp=GREY_RAMP):
     """
@@ -115,10 +101,7 @@ def build_emphasis_map(categories, emphasis, accent=ACCENT, ramp=GREY_RAMP):
     return color_map
 
 def ranked_bar(counts, label_col, emphasis, title, value_col="Count"):
-    """
-    Horizontal ranked bar, house style: largest at top, emphasised category in
-    ACCENT with the rest greyed, direct value labels, no value axis.
-    """
+    counts = counts.copy()
     color_map = build_emphasis_map(counts[label_col], emphasis)
     order = counts.sort_values(value_col, ascending=False)[label_col].tolist()
 
@@ -131,5 +114,6 @@ def ranked_bar(counts, label_col, emphasis, title, value_col="Count"):
     )
     fig.update_traces(textposition="outside")
     fig.update_xaxes(showticklabels=False, showgrid=False, title="")
+    fig.update_yaxes(title="")
     fig.update_layout(showlegend=False)
     return fig
